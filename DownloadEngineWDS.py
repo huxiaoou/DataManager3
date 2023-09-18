@@ -33,10 +33,10 @@ class CDownloadEngineWDS(object):
             database=self.database
         )
 
-    def download_futures_calendar(self, bgn_date: str, end_date: str, exchange_id: str) -> pd.DataFrame:
+    def download_futures_calendar(self, bgn_date: str, stp_date: str, exchange_id: str) -> pd.DataFrame:
         cursor_object = self.pDataBase.cursor()
-        filter_for_dates = "TRADE_DAYS >= '{}' and TRADE_DAYS <= '{}' and  S_INFO_EXCHMARKET = '{}'".format(
-            bgn_date, end_date, exchange_id)
+        filter_for_dates = "TRADE_DAYS >= '{}' and TRADE_DAYS < '{}' and  S_INFO_EXCHMARKET = '{}'".format(
+            bgn_date, stp_date, exchange_id)
         cmd_query = "SELECT TRADE_DAYS FROM CFUTURESCALENDAR WHERE {}".format(filter_for_dates)
         cursor_object.execute(cmd_query)
         download_data = cursor_object.fetchall()
@@ -69,7 +69,7 @@ class CDownloadEngineWDS(object):
         df = pd.DataFrame(download_data, columns=download_values)
         return df
 
-    def download_futures_positions_by_date(self, bgn_date: str, stp_date: str, download_values: list[str], futures_type: str) -> pd.DataFrame:
+    def download_futures_positions_by_dates(self, bgn_date: str, stp_date: str, download_values: list[str], futures_type: str) -> pd.DataFrame:
         """
 
         :param bgn_date:
@@ -82,12 +82,37 @@ class CDownloadEngineWDS(object):
         # all the historical data day by day. So the interface of this function is slightly different
         # from others.
         wds_tab_name = {
-            'C': "CCOMMODITYFUTURESPOSITIONS",
-            'E': "CINDEXFUTURESPOSITIONS",
+            "C": "CCOMMODITYFUTURESPOSITIONS",
+            "E": "CINDEXFUTURESPOSITIONS",
         }[futures_type]
 
         cursor_object = self.pDataBase.cursor()
         filter_for_dates = "TRADE_DT >= '{}' and TRADE_DT < '{}'".format(bgn_date, stp_date)
+        download_values_list = ["TRADE_DT"] + download_values
+        cmd_query = "SELECT {} FROM {} WHERE {}".format(", ".join(download_values_list), wds_tab_name, filter_for_dates)
+        cursor_object.execute(cmd_query)
+        download_data = cursor_object.fetchall()
+        df = pd.DataFrame(download_data, columns=download_values_list).sort_values(by=["TRADE_DT", "S_INFO_WINDCODE", "FS_INFO_TYPE", "FS_INFO_RANK"])
+        return df
+
+    def download_futures_positions_by_date(self, bgn_date: str, download_values: list[str], futures_type: str) -> pd.DataFrame:
+        """
+
+        :param bgn_date:
+        :param download_values:
+        :param futures_type: 'C' = commodity, 'E' =  equity index
+        :return:
+        """
+        # The download speed from the server by date is extremely low, it's not acceptable to download
+        # all the historical data day by day. So the interface of this function is slightly different
+        # from others.
+        wds_tab_name = {
+            "C": "CCOMMODITYFUTURESPOSITIONS",
+            "E": "CINDEXFUTURESPOSITIONS",
+        }[futures_type]
+
+        cursor_object = self.pDataBase.cursor()
+        filter_for_dates = "TRADE_DT == '{}'".format(bgn_date)
         download_values_list = ["TRADE_DT"] + download_values
         cmd_query = "SELECT {} FROM {} WHERE {}".format(", ".join(download_values_list), wds_tab_name, filter_for_dates)
         cursor_object.execute(cmd_query)
