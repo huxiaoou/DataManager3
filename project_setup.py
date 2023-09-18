@@ -10,9 +10,6 @@ import os
 import sys
 import json
 import platform
-import numpy as np
-import pandas as pd
-import datetime as dt
 
 # platform confirmation
 this_platform = platform.system().upper()
@@ -39,16 +36,12 @@ futures_dir = os.path.join(project_data_root_dir, global_config["futures"]["dir"
 futures_instru_info_path = os.path.join(futures_dir, global_config["futures"]["instrument_info_file"])
 futures_by_date_dir = os.path.join(futures_dir, global_config["futures"]["by_date"]["dir"])
 futures_by_instrument_dir = os.path.join(futures_dir, global_config["futures"]["by_instrument"]["dir"])
-
 with open(os.path.join(futures_dir, global_config["futures"]["md"]["db_struct_file"])) as j:
     db_structs = json.load(j)
 futures_md_wds_db_name = global_config["futures"]["md"]["wds_db"]
 futures_md_tsdb_db_name = global_config["futures"]["md"]["tsdb_db"]
 futures_em01_db_name = global_config["futures"]["md"]["em01_db"]
 futures_cm01_db_name = global_config["futures"]["md"]["cm01_db"]
-
-with open(os.path.join(futures_dir, global_config["futures"]["fundamental"]["db_struct_file"])) as j:
-    futures_fundamental_db_structs = json.load(j)
 futures_fundamental_db_name = global_config["futures"]["fundamental"]["db"]
 
 if __name__ == "__main__":
