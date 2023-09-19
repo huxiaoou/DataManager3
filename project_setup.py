@@ -14,10 +14,10 @@ import platform
 # platform confirmation
 this_platform = platform.system().upper()
 if this_platform == "WINDOWS":
-    with open("/Deploy/config3.json", "r") as j:
+    with open("/Deploy/config3.json", "r", encoding="utf-8") as j:
         global_config = json.load(j)
 elif this_platform == "LINUX":
-    with open("/home/huxo/Deploy/config3.json", "r") as j:
+    with open("/home/huxo/Deploy/config3.json", "r", encoding="utf-8") as j:
         global_config = json.load(j)
 else:
     print("... this platform is {}.".format(this_platform))
@@ -36,7 +36,7 @@ futures_dir = os.path.join(project_data_root_dir, global_config["futures"]["dir"
 futures_instru_info_path = os.path.join(futures_dir, global_config["futures"]["instrument_info_file"])
 futures_by_date_dir = os.path.join(futures_dir, global_config["futures"]["by_date"]["dir"])
 futures_by_instrument_dir = os.path.join(futures_dir, global_config["futures"]["by_instrument"]["dir"])
-with open(os.path.join(futures_dir, global_config["futures"]["md"]["db_struct_file"])) as j:
+with open(os.path.join(futures_dir, global_config["futures"]["db_struct_file"]), "r", encoding="utf-8") as j:
     db_structs = json.load(j)
 futures_md_wds_db_name = global_config["futures"]["md"]["wds_db"]
 futures_md_tsdb_db_name = global_config["futures"]["md"]["tsdb_db"]

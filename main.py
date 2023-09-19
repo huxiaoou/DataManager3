@@ -2,6 +2,7 @@ import argparse
 import datetime as dt
 from ManagerCalendar import download_calendar
 from DownloadEngineWDS import CDownloadEngineWDS
+from DownloadEngineWAPI import CDownloadEngineWAPI
 
 
 def parse_args():
@@ -34,16 +35,23 @@ if __name__ == "__main__":
     switch, data_type, t3, t2 = parse_args()
     run_mode, bgn_date, stp_date = t3
     if switch == "D":
-        from project_setup import global_config
+        from project_setup import global_config, calendar_path, futures_instru_info_path
+        from skyrim.whiterun import CCalendar, CInstrumentInfoTable
+
+        calendar = CCalendar(calendar_path)
+        instru_info_table = CInstrumentInfoTable(futures_instru_info_path, t_index_label="windCode", t_type="CSV")
+        universe = instru_info_table.get_universe()
 
         download_engine_wds = CDownloadEngineWDS(
-            host=global_config["account"]["host"],
-            user=global_config["account"]["user"],
-            passwd=global_config["account"]["passwd"],
-            database=global_config["account"]["database"],
+            host=global_config["account"]["wds"]["host"],
+            user=global_config["account"]["wds"]["user"],
+            passwd=global_config["account"]["wds"]["passwd"],
+            database=global_config["account"]["wds"]["database"],
         )
+        download_engine_wapi = CDownloadEngineWAPI(instruments=universe)
         if data_type == "CAL":
             from project_setup import calendar_path
+
             append_bgn_shift, append_stp_shift = t2
             download_calendar(calendar_path, run_mode=run_mode, bgn_date=bgn_date, stp_date=stp_date,
                               append_bgn_shift=append_bgn_shift, append_stp_shift=append_stp_shift,
