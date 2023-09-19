@@ -9,8 +9,8 @@ from skyrim.falkreath import CManagerLibWriterByDate, CLib1Tab1
 
 
 class CManagerDailyIncrementData(object):
-    def __init__(self, data_save_dir: str, calendar: CCalendar):
-        self.file_name_format = "NotInit"
+    def __init__(self, file_name_format: str, data_save_dir: str, calendar: CCalendar):
+        self.file_name_format = file_name_format
         self.data_save_dir = data_save_dir
         self.calendar = calendar
 
@@ -123,10 +123,11 @@ class CManagerDailyIncrementDataWithEngineWAPI(CManagerDailyIncrementData):
 
 # --- Md from WDS
 class CManagerDailyIncrementDataMdWDS(CManagerDailyIncrementDataWithEngineWDS):
-    def __init__(self, download_values: list[str], file_name_format: str = "md_wds.{}.csv.gz", **kwargs):
+    def __init__(self, download_values: list[str], rename_mapper: dict[str, str],
+                 file_name_format: str = "md_wds.{}.csv.gz", **kwargs):
         self.download_values = download_values
-        super().__init__(**kwargs)
-        self.file_name_format = file_name_format
+        self.rename_mapper = rename_mapper
+        super().__init__(file_name_format=file_name_format, **kwargs)
 
     def _get_update_data(self, trade_date: str) -> pd.DataFrame:
         df = self.download_engine_wds.download_futures_md_by_date(trade_date, self.download_values)
@@ -142,18 +143,18 @@ class CManagerDailyIncrementDataMdWDS(CManagerDailyIncrementDataWithEngineWDS):
         # Make sure the column orders are the same as those in md_structure.json
         raw_df = raw_df.loc[filter_exchange, ["loc_id", "instrument", "exchange"] + self.download_values]
         raw_df["loc_id"] = raw_df[["loc_id", "exchange"]].apply(lambda z: ".".join(z), axis=1)
+        raw_df.rename(mapper=self.rename_mapper, axis=1, inplace=True)
         return raw_df
 
 
 # --- Position from WDS
 class CManagerDailyIncrementDataPositionWDS(CManagerDailyIncrementDataWithEngineWDS):
-    def __init__(self, download_values: list[str], rename_mapper: dict[str, str] = None,
+    def __init__(self, download_values: list[str], rename_mapper: dict[str, str],
                  file_name_format: str = "positions.{}.{{}}.csv.gz", futures_type: str = "C", **kwargs):
         self.download_values = download_values
         self.rename_mapper = rename_mapper
         self.futures_type = futures_type.upper()
-        super().__init__(**kwargs)
-        self.file_name_format = file_name_format.format(self.futures_type)
+        super().__init__(file_name_format=file_name_format.format(self.futures_type), **kwargs)
 
     def _get_update_data(self, trade_date: str) -> pd.DataFrame:
         df = self.download_engine_wds.download_futures_positions_by_date(trade_date, self.download_values, self.futures_type)
@@ -177,18 +178,18 @@ class CManagerDailyIncrementDataPositionWDS(CManagerDailyIncrementDataWithEngine
 
 # --- Stock from WDS
 class CManagerDailyIncrementDataStockWDS(CManagerDailyIncrementDataWithEngineWDS):
-    def __init__(self, download_values: list[str], file_name_format: str = "stock.{}.csv.gz",
+    def __init__(self, download_values: list[str], rename_mapper: dict[str, str],
+                 file_name_format: str = "stock.{}.csv.gz",
                  header_df: pd.DataFrame = None, id_mapper: dict[str, str] = None,
-                 rename_mapper: dict[str, str] = None, drop_cols: list[str] = None, **kwargs):
+                 drop_cols: list[str] = None, **kwargs):
         # like the argument "instruments" in download_engine_wapi to download basis
         # header df would confine the final output to "instruments"
         self.download_values = download_values
+        self.rename_mapper = rename_mapper
         self.header_df = header_df  # instruments to be downloaded from WDS
         self.id_mapper = id_mapper
-        self.rename_mapper = rename_mapper
         self.drop_cols = drop_cols
-        super().__init__(**kwargs)
-        self.file_name_format = file_name_format
+        super().__init__(file_name_format=file_name_format, **kwargs)
 
     def _get_update_data(self, trade_date: str) -> pd.DataFrame:
         df = self.download_engine_wds.download_futures_stock_by_date(trade_date, self.download_values)
@@ -205,7 +206,7 @@ class CManagerDailyIncrementDataStockWDS(CManagerDailyIncrementDataWithEngineWDS
         raw_df = pd.merge(left=self.header_df, right=raw_df, on="wind_code", how="left")
         raw_df["instrument"], raw_df["exchange"] = zip(*raw_df["wind_code"].map(_parse_wind_code))
         raw_df = raw_df.set_index("wind_code")
-        filter_exchange = raw_df["exchange"].map(lambda z: z in ["SHF", "INE", "DCE", "CZC", "GFE"])
+        filter_exchange = raw_df["exchange"].map(lambda z: z in ["SHF", "INE", "DCE", "CZC", "GFE"])  # exclude instruments of CFE
         raw_df = raw_df.loc[filter_exchange, ["instrument", "exchange"] + self.download_values]
         raw_df.drop(axis=1, labels=self.drop_cols, inplace=True)  # if drop_cols = [], nothing would be applied
         raw_df.rename(mapper=self.rename_mapper, axis=1, inplace=True)
@@ -215,13 +216,13 @@ class CManagerDailyIncrementDataStockWDS(CManagerDailyIncrementDataWithEngineWDS
 
 # --- Basis from WAPI
 class CManagerDailyIncrementDataBasisWAPI(CManagerDailyIncrementDataWithEngineWAPI):
-    def __init__(self, download_values: list[str], file_name_format: str = "basis.{}.csv.gz",
-                 rename_mapper: dict[str, str] = None, using_full_id: bool = True, **kwargs):
+    def __init__(self, download_values: list[str], rename_mapper: dict[str, str],
+                 file_name_format: str = "basis.{}.csv.gz",
+                 using_full_id: bool = True, **kwargs):
         self.download_values = download_values
         self.rename_mapper = rename_mapper
         self.using_full_id = using_full_id
-        super().__init__(**kwargs)
-        self.file_name_format = file_name_format
+        super().__init__(file_name_format=file_name_format, **kwargs)
 
     def _get_update_data(self, trade_date: str) -> pd.DataFrame:
         df = self.download_engine_wapi.download_by_date_api(trade_date, self.download_values, using_full_id=self.using_full_id)

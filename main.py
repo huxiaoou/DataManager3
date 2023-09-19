@@ -8,15 +8,15 @@ def parse_args():
     args_parser.add_argument("-w", "--switch", type=str,
                              help="""use this to decide which parts to run, available options = {
         'd': download,
-        't': translate to sqlite or tsdb
+        't': translate to sqlite/tsdb
         }""")
     args_parser.add_argument("-t", "--type", type=str, default="",
                              help="""available options = {'cal', 'md_wds', 'md_tsdb', 'em01', 'cm01', 'posc', 'pose', 'stock', 'basis'}""")
     args_parser.add_argument("-m", "--mode", type=str, choices=("o", "a"), help="""run mode, available options = {'o', 'a'}""")
     args_parser.add_argument("-b", "--bgn", type=str, help="""begin date""")
     args_parser.add_argument("-s", "--stp", type=str, help="""stop  date""")
-    args_parser.add_argument("-bs", "--bgnShift", type=int, default=0, help="""begin date shift when append calendar, must > 0""")
-    args_parser.add_argument("-ss", "--stpShift", type=int, default=0, help="""stop  date shift when append calendar, must > 0""")
+    args_parser.add_argument("-bs", "--bgnShift", type=int, default=30, help="""begin date shift when append calendar, must > 0""")
+    args_parser.add_argument("-ss", "--stpShift", type=int, default=60, help="""stop  date shift when append calendar, must > 0""")
     args = args_parser.parse_args()
 
     _switch = args.switch.upper()
@@ -68,8 +68,22 @@ if __name__ == "__main__":
                 "S_DQ_VOLUME", "S_DQ_AMOUNT", "S_DQ_OI",
                 "S_DQ_CHANGE",
             ]
+            rename_mapper = {
+                "S_INFO_WINDCODE": "wind_code",
+                "S_DQ_SETTLE": "settle",
+                "S_DQ_PRESETTLE": "presettle",
+                "S_DQ_OPEN": "open",
+                "S_DQ_HIGH": "high",
+                "S_DQ_LOW": "low",
+                "S_DQ_CLOSE": "close",
+                "S_DQ_VOLUME": "volume",
+                "S_DQ_AMOUNT": "amount",
+                "S_DQ_OI": "oi",
+                "S_DQ_CHANGE": "change",
+
+            }
             mgr_download = CManagerDailyIncrementDataMdWDS(
-                download_values=download_values,
+                download_values=download_values, rename_mapper=rename_mapper,
                 download_engine_wds=download_engine_wds,
                 data_save_dir=futures_by_date_dir, calendar=calendar
             )
