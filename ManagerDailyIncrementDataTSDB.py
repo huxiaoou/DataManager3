@@ -75,7 +75,7 @@ class CManagerDailyIncrementDataM01TSDB(CManagerDailyIncrementDataWithEngineTSDB
         return df
 
     @staticmethod
-    def _get_filter_exch():
+    def _get_filter_exch(df: pd.DataFrame):
         pass
 
     def _reformat(self, raw_df: pd.DataFrame, trade_date: str) -> pd.DataFrame:
