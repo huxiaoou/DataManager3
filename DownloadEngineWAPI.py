@@ -24,13 +24,13 @@ class CDownloadEngineWAPI(object):
             df = pd.DataFrame(downloaded_data.Data, index=download_values, columns=col_names).T
         return df
 
+    @staticmethod
+    def parse_wind_code(df: pd.DataFrame):
+        def _parse_wind_code(iid: str):
+            instrument, exchange = iid.split(".")
+            if exchange not in ["CZC"]:
+                instrument = instrument.lower()
+            return instrument, exchange
 
-def parse_wind_code(df: pd.DataFrame):
-    def _parse_wind_code(iid: str):
-        instrument, exchange = iid.split(".")
-        if exchange not in ["CZC"]:
-            instrument = instrument.lower()
-        return instrument, exchange
-
-    df["instrument"], df["exchange"] = zip(*df.index.map(_parse_wind_code))
-    return df
+        df["instrument"], df["exchange"] = zip(*df.index.map(_parse_wind_code))
+        return df

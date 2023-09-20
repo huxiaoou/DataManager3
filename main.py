@@ -35,14 +35,13 @@ if __name__ == "__main__":
     if switch == "D":
         from project_setup import (global_config, calendar_path, futures_instru_info_path,
                                    futures_by_date_dir)
-        from DownloadEngineWDS import CDownloadEngineWDS
-        from DownloadEngineWAPI import CDownloadEngineWAPI
         from skyrim.whiterun import CCalendar, CInstrumentInfoTable
 
         # shared variables and tools
         calendar = CCalendar(calendar_path)
-        instru_info_table = CInstrumentInfoTable(futures_instru_info_path, t_index_label="windCode", t_type="CSV")
-        universe = instru_info_table.get_universe()
+        instru_info_table_w = CInstrumentInfoTable(futures_instru_info_path, t_index_label="windCode", t_type="CSV")
+        instru_info_table_i = CInstrumentInfoTable(futures_instru_info_path, t_index_label="instrumentId", t_type="CSV")
+        universe = instru_info_table_w.get_universe()
         wds_account = dict(
             host=global_config["account"]["wds"]["host"],
             user=global_config["account"]["wds"]["user"],
@@ -51,6 +50,7 @@ if __name__ == "__main__":
         )
 
         if data_type == "CAL":
+            from DownloadEngineWDS import CDownloadEngineWDS
             from ManagerCalendar import download_calendar
 
             append_bgn_shift, append_stp_shift = t2
@@ -59,7 +59,8 @@ if __name__ == "__main__":
                               append_bgn_shift=append_bgn_shift, append_stp_shift=append_stp_shift,
                               download_engine_wds=download_engine_wds)
         elif data_type == "MD_WDS":
-            from ManagerDailyIncrementData import CManagerDailyIncrementDataMdWDS
+            from DownloadEngineWDS import CDownloadEngineWDS
+            from ManagerDailyIncrementDataWDS import CManagerDailyIncrementDataMdWDS
 
             download_engine_wds = CDownloadEngineWDS(**wds_account)
             download_values = [
@@ -90,13 +91,59 @@ if __name__ == "__main__":
             )
             mgr_download.main(run_mode, bgn_date, stp_date, verbose=run_mode in ["A"])
         elif data_type == "MD_TSDB":
-            pass
+            from TSDBTranslator2.translator import CTSDBReader
+            from ManagerDailyIncrementDataTSDB import CManagerDailyIncrementDataMdTSDB
+
+            download_values = [
+                "open", "high", "low", "close", "settle",
+                "preclose", "presettle",
+                "vol", "amount", "oi"
+            ]
+            download_engine_tsdb = CTSDBReader(t_tsdb_path=global_config["TSDB"]["server_path"])
+            mgr_download = CManagerDailyIncrementDataMdTSDB(
+                download_values=download_values, instru_info_table=instru_info_table_i,
+                download_engine_tsdb=download_engine_tsdb,
+                data_save_dir=futures_by_date_dir, calendar=calendar
+            )
+            mgr_download.main(run_mode, bgn_date, stp_date, verbose=run_mode in ["A"])
+
         elif data_type == "CM01":
-            pass
+            from TSDBTranslator2.translator import CTSDBReader
+            from ManagerDailyIncrementDataTSDB import CManagerDailyIncrementDataCM01TSDB
+
+            download_values = [
+                "open", "high", "low", "close",
+                "vol", "amount", "oi",
+                "daily_open", "daily_high", "daily_low",
+                "preclose", "preoi",
+            ]
+            download_engine_tsdb = CTSDBReader(t_tsdb_path=global_config["TSDB"]["server_path"])
+            mgr_download = CManagerDailyIncrementDataCM01TSDB(
+                download_values=download_values, instru_info_table=instru_info_table_i,
+                download_engine_tsdb=download_engine_tsdb,
+                data_save_dir=futures_by_date_dir, calendar=calendar
+            )
+            mgr_download.main(run_mode, bgn_date, stp_date, verbose=run_mode in ["A"])
         elif data_type == "EM01":
-            pass
+            from TSDBTranslator2.translator import CTSDBReader
+            from ManagerDailyIncrementDataTSDB import CManagerDailyIncrementDataEM01TSDB
+
+            download_values = [
+                "open", "high", "low", "close",
+                "vol", "amount", "oi",
+                "daily_open", "daily_high", "daily_low",
+                "preclose", "preoi",
+            ]
+            download_engine_tsdb = CTSDBReader(t_tsdb_path=global_config["TSDB"]["server_path"])
+            mgr_download = CManagerDailyIncrementDataEM01TSDB(
+                download_values=download_values, instru_info_table=instru_info_table_i,
+                download_engine_tsdb=download_engine_tsdb,
+                data_save_dir=futures_by_date_dir, calendar=calendar
+            )
+            mgr_download.main(run_mode, bgn_date, stp_date, verbose=run_mode in ["A"])
         elif data_type == "POSC":
-            from ManagerDailyIncrementData import CManagerDailyIncrementDataPositionWDS
+            from DownloadEngineWDS import CDownloadEngineWDS
+            from ManagerDailyIncrementDataWDS import CManagerDailyIncrementDataPositionWDS
 
             download_engine_wds = CDownloadEngineWDS(**wds_account)
             download_values = [
@@ -120,9 +167,10 @@ if __name__ == "__main__":
                 download_engine_wds=download_engine_wds,
                 data_save_dir=futures_by_date_dir, calendar=calendar
             )
-            mgr_download.main(run_mode, bgn_date, stp_date, verbose=True)
+            mgr_download.main(run_mode, bgn_date, stp_date, verbose=run_mode in ["A"])
         elif data_type == "POSE":
-            from ManagerDailyIncrementData import CManagerDailyIncrementDataPositionWDS
+            from DownloadEngineWDS import CDownloadEngineWDS
+            from ManagerDailyIncrementDataWDS import CManagerDailyIncrementDataPositionWDS
 
             download_engine_wds = CDownloadEngineWDS(**wds_account)
             download_values = [
@@ -146,10 +194,10 @@ if __name__ == "__main__":
                 download_engine_wds=download_engine_wds,
                 data_save_dir=futures_by_date_dir, calendar=calendar
             )
-            mgr_download.main(run_mode, bgn_date, stp_date, verbose=True)
+            mgr_download.main(run_mode, bgn_date, stp_date, verbose=run_mode in ["A"])
         elif data_type == "STOCK":
-            from project_setup import global_config
-            from ManagerDailyIncrementData import CManagerDailyIncrementDataStockWDS
+            from DownloadEngineWDS import CDownloadEngineWDS
+            from ManagerDailyIncrementDataWDS import CManagerDailyIncrementDataStockWDS
 
             download_engine_wds = CDownloadEngineWDS(**wds_account)
             download_values = [
@@ -173,7 +221,8 @@ if __name__ == "__main__":
             )
             mgr_download.main(run_mode, bgn_date, stp_date, verbose=run_mode in ["A"])
         elif data_type == "BASIS":
-            from ManagerDailyIncrementData import CManagerDailyIncrementDataBasisWAPI
+            from DownloadEngineWAPI import CDownloadEngineWAPI
+            from ManagerDailyIncrementDataWAPI import CManagerDailyIncrementDataBasisWAPI
 
             download_engine_wapi = CDownloadEngineWAPI(instruments=universe)
             download_values = ["anal_basis", "anal_basispercent2"]
