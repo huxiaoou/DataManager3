@@ -1,0 +1,2 @@
+trade_date,loc_id,instrument,exchange,wind_code,open,high,low,close,settle,preclose,presettle,vol,amount,oi
+20220310,NI2204.SHF,NI,SHF,NI2204.SHF,267700,267700,267700,267700,267700,267700,267700,0,0,114596
