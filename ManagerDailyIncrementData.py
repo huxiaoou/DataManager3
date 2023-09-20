@@ -3,7 +3,7 @@ import datetime as dt
 import pandas as pd
 from DownloadEngineWDS import CDownloadEngineWDS
 from DownloadEngineWAPI import CDownloadEngineWAPI, parse_wind_code
-from skyrim.whiterun import CCalendar, parse_instrument_from_contract_wind, fix_contract_id, SetFontRed, SetFontYellow
+from skyrim.whiterun import CCalendar, parse_instrument_from_contract_wind, fix_contract_id, SetFontGreen, SetFontYellow
 from skyrim.winterhold2 import check_and_mkdir
 from skyrim.falkreath import CManagerLibWriterByDate, CLib1Tab1
 
@@ -34,10 +34,10 @@ class CManagerDailyIncrementData(object):
             prev_path = self.__get_date_file_path(prev_date)
             this_path = self.__get_date_file_path(append_date)
             if not os.path.exists(prev_path):
-                print(f"... Error! {SetFontRed('Prev path does not exist')}. This date = {SetFontYellow(append_date)}, prev_date = {SetFontYellow(prev_date)}, Prev path = {prev_path}")
+                print(f"... Error! {SetFontGreen('Prev path does not exist')}. This date = {SetFontYellow(append_date)}, prev_date = {SetFontYellow(prev_date)}, Prev path = {prev_path}")
                 return False
             elif os.path.exists(this_path):
-                print(f"... Error! {SetFontRed('This path already  exist')}. This date = {SetFontYellow(append_date)}, prev_date = {SetFontYellow(prev_date)}, This path = {this_path}")
+                print(f"... Error! {SetFontGreen('This path already  exist')}. This date = {SetFontYellow(append_date)}, prev_date = {SetFontYellow(prev_date)}, This path = {this_path}")
                 return False
             else:
                 return True
@@ -230,5 +230,7 @@ class CManagerDailyIncrementDataBasisWAPI(CManagerDailyIncrementDataWithEngineWA
 
     def _reformat(self, raw_df: pd.DataFrame, trade_date: str) -> pd.DataFrame:
         raw_df = parse_wind_code(raw_df)
+        filter_exchange = raw_df["exchange"].map(lambda z: z in ["SHF", "INE", "DCE", "CZC", "GFE"])  # exclude instruments of CFE
+        raw_df = raw_df.loc[filter_exchange].copy()
         raw_df.rename(mapper=self.rename_mapper, axis=1, inplace=True)
         return raw_df
