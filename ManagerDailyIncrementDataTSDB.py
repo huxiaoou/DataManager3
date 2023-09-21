@@ -114,7 +114,6 @@ class CManagerDailyIncrementDataM01TSDB(CManagerDailyIncrementDataWithEngineTSDB
         # Make sure the column orders are the same as those in md_structure.json
         raw_df = raw_df[["timestamp", "loc_id", "instrument", "exchange", "wind_code"] + self.download_values]
         raw_df.sort_values(by=["timestamp", "loc_id"], ascending=True, inplace=True)
-        print(raw_df)
         return raw_df
 
 

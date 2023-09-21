@@ -37,6 +37,7 @@ class CManagerDailyIncrementDataMdWDS(CManagerDailyIncrementDataWithEngineWDS):
         # Make sure the column orders are the same as those in md_structure.json
         raw_df = raw_df.loc[filter_exchange, ["loc_id", "instrument", "exchange"] + self.download_values]
         raw_df["loc_id"] = raw_df[["loc_id", "exchange"]].apply(lambda z: ".".join(z), axis=1)
+        raw_df.sort_values("loc_id", ascending=True, inplace=True)
         raw_df.rename(mapper=self.rename_mapper, axis=1, inplace=True)
         return raw_df
 
