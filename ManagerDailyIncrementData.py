@@ -24,6 +24,14 @@ class CManagerDailyIncrementData(object):
         trade_date_file = self.__get_date_file_name(trade_date)
         return os.path.join(self.data_save_dir, trade_date[0:4], trade_date, trade_date_file)
 
+    def _get_date_df(self, trade_date: str) -> pd.DataFrame:
+        df = pd.read_csv(self.__get_date_file_path(trade_date), dtype=str)
+        return df
+
+    def _save_to_file(self, df: pd.DataFrame, trade_date: str):
+        df.to_csv(self.__get_date_file_path(trade_date), index=False)
+        return 0
+
     def __check_continuity(self, run_mode: str, append_date: str) -> bool:
         if run_mode in ["O"]:
             return True

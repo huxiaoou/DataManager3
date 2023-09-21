@@ -37,8 +37,10 @@ class CManagerDailyIncrementDataWithEngineTSDB(CManagerDailyIncrementData):
 
 # --- Md from TSDB
 class CManagerDailyIncrementDataMdTSDB(CManagerDailyIncrementDataWithEngineTSDB):
-    def __init__(self, download_values: list[str], file_name_format: str = "md_tsdb.{}.csv.gz", **kwargs):
+    def __init__(self, download_values: list[str], file_name_format: str = "md_tsdb.{}.csv.gz", patch_data_file: str = "patch_data_tsdb.csv", **kwargs):
         self.download_values = download_values
+        patch_df = pd.read_csv("patch_data.csv", dtype=str)
+        self.manager_patch = {k: v for k, v in patch_df.groupby(by="trade_date")}
         super().__init__(file_name_format=file_name_format, **kwargs)
 
     def _get_update_data(self, trade_date: str) -> pd.DataFrame:
@@ -62,6 +64,15 @@ class CManagerDailyIncrementDataMdTSDB(CManagerDailyIncrementDataWithEngineTSDB)
         raw_df["loc_id"] = raw_df[["loc_id", "exchange"]].apply(lambda z: ".".join(z), axis=1)
         raw_df.sort_values("loc_id", ascending=True, inplace=True)
         return raw_df
+
+    def patch(self, bgn_date: str, stp_date: str):
+        for trade_date in self.calendar.get_iter_list(bgn_date, stp_date, True):
+            if (patch_df := self.manager_patch.get(trade_date, None)) is not None:
+                src_df = self._get_date_df(trade_date).set_index("loc_id")
+                src_df.update(patch_df.set_index("loc_id"))
+                src_df.reset_index(inplace=True)
+                self._save_to_file(src_df, trade_date)
+        return 0
 
 
 # --- M01 from TSDB

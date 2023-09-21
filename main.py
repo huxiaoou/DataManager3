@@ -9,6 +9,7 @@ def parse_args():
                              help="""use this to decide which parts to run, available options = {
         'd': download,
         't': translate to sqlite/tsdb
+        'c': check values
         }""")
     args_parser.add_argument("-t", "--type", type=str, default="",
                              help="""available options = {'cal', 'md_wds', 'md_tsdb', 'em01', 'cm01', 'posc', 'pose', 'stock', 'basis'}""")
@@ -17,6 +18,7 @@ def parse_args():
     args_parser.add_argument("-s", "--stp", type=str, help="""stop  date""")
     args_parser.add_argument("-bs", "--bgnShift", type=int, default=30, help="""begin date shift when append calendar, must > 0""")
     args_parser.add_argument("-ss", "--stpShift", type=int, default=60, help="""stop  date shift when append calendar, must > 0""")
+    args_parser.add_argument("-vs", "--values", type=str, default="close,volume,amount,oi", help="""values to be checked, separate by ','""")
     args = args_parser.parse_args()
 
     _switch = args.switch.upper()
@@ -26,11 +28,12 @@ def parse_args():
     _bgn_shift, _stp_shift = args.bgnShift, args.stpShift
     if _stp_date is None:
         _stp_date = (dt.datetime.strptime(_bgn_date, "%Y%m%d") + dt.timedelta(days=1)).strftime("%Y%m%d")
-    return _switch, _data_type, (_run_mode, _bgn_date, _stp_date), (_bgn_shift, _stp_shift)
+    _check_values = args.checkValues.split(",")
+    return _switch, _data_type, (_run_mode, _bgn_date, _stp_date), (_bgn_shift, _stp_shift), _check_values
 
 
 if __name__ == "__main__":
-    switch, data_type, t3, t2 = parse_args()
+    switch, data_type, t3, t2, check_values = parse_args()
     run_mode, bgn_date, stp_date = t3
     if switch == "D":
         from project_setup import (global_config, calendar_path, futures_instru_info_path,
@@ -106,6 +109,7 @@ if __name__ == "__main__":
                 data_save_dir=futures_by_date_dir, calendar=calendar
             )
             mgr_download.main(run_mode, bgn_date, stp_date, verbose=run_mode in ["A"])
+            mgr_download.patch(bgn_date, stp_date)
 
         elif data_type == "CM01":
             from TSDBTranslator2.translator import CTSDBReader
@@ -236,3 +240,16 @@ if __name__ == "__main__":
                 data_save_dir=futures_by_date_dir, calendar=calendar
             )
             mgr_download.main(run_mode, bgn_date, stp_date, verbose=run_mode in ["A"])
+    elif switch == "T":
+        pass
+    elif switch == "C":
+        from project_setup import calendar_path, futures_dir, futures_md_wds_db_name, futures_md_tsdb_db_name
+        from Checks import check_tsdb_and_wds
+        from skyrim.whiterun import CCalendar
+
+        calendar = CCalendar(calendar_path)
+        check_tsdb_and_wds(
+            check_values=check_values, bgn_date=bgn_date, stp_date=stp_date,
+            futures_dir=futures_dir, futures_md_wds_db_name=futures_md_wds_db_name, futures_md_tsdb_db_name=futures_md_tsdb_db_name,
+            calendar=calendar, verbose=True
+        )
