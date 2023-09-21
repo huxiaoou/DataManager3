@@ -39,7 +39,7 @@ class CManagerDailyIncrementDataWithEngineTSDB(CManagerDailyIncrementData):
 class CManagerDailyIncrementDataMdTSDB(CManagerDailyIncrementDataWithEngineTSDB):
     def __init__(self, download_values: list[str], file_name_format: str = "md_tsdb.{}.csv.gz", patch_data_file: str = "patch_data_tsdb.csv", **kwargs):
         self.download_values = download_values
-        patch_df = pd.read_csv("patch_data.csv", dtype=str)
+        patch_df = pd.read_csv(patch_data_file, dtype=str)
         self.manager_patch = {k: v for k, v in patch_df.groupby(by="trade_date")}
         super().__init__(file_name_format=file_name_format, **kwargs)
 

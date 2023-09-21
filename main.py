@@ -28,8 +28,8 @@ def parse_args():
     _bgn_shift, _stp_shift = args.bgnShift, args.stpShift
     if _stp_date is None:
         _stp_date = (dt.datetime.strptime(_bgn_date, "%Y%m%d") + dt.timedelta(days=1)).strftime("%Y%m%d")
-    _check_values = args.checkValues.split(",")
-    return _switch, _data_type, (_run_mode, _bgn_date, _stp_date), (_bgn_shift, _stp_shift), _check_values
+    _values = args.values.split(",")
+    return _switch, _data_type, (_run_mode, _bgn_date, _stp_date), (_bgn_shift, _stp_shift), _values
 
 
 if __name__ == "__main__":
