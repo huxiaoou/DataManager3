@@ -28,3 +28,10 @@ if ($ans -eq "y")
 {
     python main.py -w d -t basis  -m o -b $bgn_date_md       -s $stp_date
 }
+
+# sync command example:
+# python main.py -w s -b 20120101 -s 20230921 -vs md,cm01,em01,basis
+
+# check command example:
+# python main.py -w c -m o -b 20120104 -s 20120201 -vs open,high,low,close,settle,presettle,volume,amount,oi # not to print details if no error
+# python main.py -w c -m a -b 20120104 -s 20120201 -vs open,high,low,close,settle,presettle,volume,amount,oi # to print details if no error

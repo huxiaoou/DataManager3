@@ -92,9 +92,9 @@ class CManagerDailyIncrementData(object):
         else:
             return dst_db_writer.check_continuity(append_date, self.calendar)
 
-    def to_sqlite_database(self, dst_db_save_dir: str, dst_db_name: str, dst_db_struct: CLib1Tab1,
+    def to_sqlite_database(self, dst_db_save_dir: str, dst_db_struct: CLib1Tab1,
                            run_mode: str, bgn_date: str, stp_date: str):
-        dst_db_writer = CManagerLibWriterByDate(dst_db_save_dir, dst_db_name)
+        dst_db_writer = CManagerLibWriterByDate(dst_db_save_dir, dst_db_struct.m_lib_name)
         dst_db_writer.initialize_table(dst_db_struct.m_tab, run_mode in ["O"])
         if self.__check_db_continuity(dst_db_writer, run_mode, bgn_date) == 0:
             for trade_date in self.calendar.get_iter_list(bgn_date, stp_date, True):
