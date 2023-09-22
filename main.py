@@ -19,7 +19,7 @@ def parse_args():
     args_parser.add_argument("-s", "--stp", type=str, help="""stop  date""")
     args_parser.add_argument("-bs", "--bgnShift", type=int, default=30, help="""begin date shift when append calendar, must > 0""")
     args_parser.add_argument("-ss", "--stpShift", type=int, default=60, help="""stop  date shift when append calendar, must > 0""")
-    args_parser.add_argument("-vs", "--values", type=str, default=[], help="""values to be checked, separate by ','""")
+    args_parser.add_argument("-vs", "--values", type=str, help="""values to be checked, separate by ','""")
     args = args_parser.parse_args()
 
     _switch = args.switch.upper()
