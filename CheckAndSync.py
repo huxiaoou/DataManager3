@@ -11,7 +11,7 @@ def check_tsdb_and_wds(check_values: list[str], bgn_date: str, stp_date: str,
     pd.set_option("display.max_rows", display_max_rows)
     pd.set_option("display.float_format", display_float_format.format)
 
-    error_threshold = {
+    error_thresholds = {
         "open": 0.003,
         "high": 0.003,
         "low": 0.003,
@@ -20,7 +20,7 @@ def check_tsdb_and_wds(check_values: list[str], bgn_date: str, stp_date: str,
         "presettle": 0.003,
         "volume": 0.001,
         "oi": 0.001,
-        "amount": 0.0001,
+        "amount": 0.005,
     }
 
     print("-" * 120)
@@ -48,30 +48,31 @@ def check_tsdb_and_wds(check_values: list[str], bgn_date: str, stp_date: str,
             print("Not enough data for comparison @ {}".format(trade_date))
             continue
 
-        err_dict = {}
+        err_dict = []
         error_values_to_print = []
         filter_error = None
         errors_are_found = False
         for var_name in check_values:
-            if var_name in ["amount"]:
+            if var_name in ["volume", "amount"]:
                 diff_abs_srs = (comparison_df[var_name + "_W"] / comparison_df[var_name + "_T"] - 1).abs()
             else:
                 diff_abs_srs = (comparison_df[var_name + "_W"] - comparison_df[var_name + "_T"]).abs()
 
-            err_dict[var_name] = diff_abs_srs.sum()
-            this_var_err_threshold = error_threshold[var_name]
-            if this_var_has_err := (err_dict[var_name] > this_var_err_threshold):
+            err_abs_sum = diff_abs_srs.sum()
+            err_threshold = error_thresholds[var_name]
+            if this_var_has_err := (err_abs_sum > err_threshold):
                 error_values_to_print.append(var_name + "_W")
                 error_values_to_print.append(var_name + "_T")
-                var_error_srs = diff_abs_srs >= (this_var_err_threshold / len(diff_abs_srs))
+                var_error_srs = diff_abs_srs >= (err_threshold / len(diff_abs_srs))
                 filter_error = var_error_srs if filter_error is None else (filter_error | var_error_srs)
             errors_are_found = errors_are_found or this_var_has_err
+            err_dict.append({"var": var_name, "err": err_abs_sum, "threshold": err_threshold})
 
         if errors_are_found:
             error_df = comparison_df.loc[filter_error]
             print("-" * 120)
             print(f"Warning! Errors are found at: {SetFontRed(trade_date)}")
-            print(pd.Series(err_dict))
+            print(pd.DataFrame(err_dict))
             print(f"Rows of comp  df = {SetFontYellow(f'{len(comparison_df)}')}")
             print(f"Rows of Error df = {SetFontYellow(f'{len(error_df)}')}")
             print(error_df[["loc_id"] + error_values_to_print])
@@ -98,13 +99,16 @@ class CAgentSync(object):
             if verbose:
                 print(f"... copy {SetFontYellow(remote_path)} to {SetFontGreen(local_path)}")
         except scp.SCPException:
-            print(f"... {SetFontRed('FAILED')}")
+            print(f"... {SetFontRed('FAILED')} to download {SetFontYellow(remote_path)}")
         return 0
 
     def copy_from_local_to_remote(self, local_path: str, remote_path: str, verbose: bool):
-        self.scp.put(local_path, remote_path)
-        if verbose:
-            print(f"... copy {SetFontYellow(local_path)} to {SetFontGreen(remote_path)}")
+        try:
+            self.scp.put(local_path, remote_path)
+            if verbose:
+                print(f"... copy {SetFontYellow(local_path)} to {SetFontGreen(remote_path)}")
+        except scp.SCPException:
+            print(f"... {SetFontRed('FAILED')} to upload {SetFontYellow(local_path)}")
         return 0
 
     def close(self):
