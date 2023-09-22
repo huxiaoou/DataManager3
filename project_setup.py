@@ -42,8 +42,8 @@ futures_md_wds_db_name = global_config["futures"]["md"]["wds_db"]
 futures_md_tsdb_db_name = global_config["futures"]["md"]["tsdb_db"]
 futures_cm01_db_name = global_config["futures"]["md"]["cm01_db"]
 futures_em01_db_name = global_config["futures"]["md"]["em01_db"]
-futures_position_c_db_name = global_config["futures"]["position"]["c_db"]
-futures_position_e_db_name = global_config["futures"]["position"]["e_db"]
+futures_positions_c_db_name = global_config["futures"]["positions"]["c_db"]
+futures_positions_e_db_name = global_config["futures"]["positions"]["e_db"]
 futures_fundamental_db_name = global_config["futures"]["fundamental"]["db"]
 
 if __name__ == "__main__":
