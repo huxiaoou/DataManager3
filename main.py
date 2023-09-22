@@ -283,16 +283,16 @@ if __name__ == "__main__":
             calendar=calendar, verbose=run_mode in ["A"]  # to print details if no error
         )
     elif switch == "T":
-        from project_setup import futures_dir, futures_by_date_dir, calendar_path
+        from project_setup import futures_dir, futures_by_date_dir, calendar_path, db_structs
         from ManagerDailyIncrementData import CManagerDailyIncrementData
         from skyrim.whiterun import CCalendar
         from skyrim.falkreath import CLib1Tab1, CTable
 
         calendar = CCalendar(calendar_path)
         if data_type == "MD_WDS":
-            from project_setup import futures_md_wds_db_name, db_structs
+            from project_setup import futures_md_wds_db_name
 
-            mgr_download = CManagerDailyIncrementData("md_wds.{}.csv.gz", futures_by_date_dir, calendar_path)
+            mgr_download = CManagerDailyIncrementData("md_wds.{}.csv.gz", futures_by_date_dir, calendar)
             table = CTable(db_structs[futures_md_wds_db_name]["CTable"])
             mgr_download.to_sqlite_database(
                 dst_db_save_dir=futures_dir,
@@ -300,9 +300,9 @@ if __name__ == "__main__":
                 run_mode=run_mode, bgn_date=bgn_date, stp_date=stp_date
             )
         elif data_type == "MD_TSDB":
-            from project_setup import futures_md_tsdb_db_name, db_structs
+            from project_setup import futures_md_tsdb_db_name
 
-            mgr_download = CManagerDailyIncrementData("md_tsdb.{}.csv.gz", futures_by_date_dir, calendar_path)
+            mgr_download = CManagerDailyIncrementData("md_tsdb.{}.csv.gz", futures_by_date_dir, calendar)
             table = CTable(db_structs[futures_md_tsdb_db_name]["CTable"])
             mgr_download.to_sqlite_database(
                 dst_db_save_dir=futures_dir,
@@ -310,9 +310,9 @@ if __name__ == "__main__":
                 run_mode=run_mode, bgn_date=bgn_date, stp_date=stp_date
             )
         elif data_type == "CM01":
-            from project_setup import futures_cm01_db_name, db_structs
+            from project_setup import futures_cm01_db_name
 
-            mgr_download = CManagerDailyIncrementData("cm01_tsdb.{}.csv.gz", futures_by_date_dir, calendar_path)
+            mgr_download = CManagerDailyIncrementData("cm01_tsdb.{}.csv.gz", futures_by_date_dir, calendar)
             table = CTable(db_structs[futures_cm01_db_name]["CTable"])
             mgr_download.to_sqlite_database(
                 dst_db_save_dir=futures_dir,
@@ -320,9 +320,9 @@ if __name__ == "__main__":
                 run_mode=run_mode, bgn_date=bgn_date, stp_date=stp_date
             )
         elif data_type == "EM01":
-            from project_setup import futures_em01_db_name, db_structs
+            from project_setup import futures_em01_db_name
 
-            mgr_download = CManagerDailyIncrementData("em01_tsdb.{}.csv.gz", futures_by_date_dir, calendar_path)
+            mgr_download = CManagerDailyIncrementData("em01_tsdb.{}.csv.gz", futures_by_date_dir, calendar)
             table = CTable(db_structs[futures_em01_db_name]["CTable"])
             mgr_download.to_sqlite_database(
                 dst_db_save_dir=futures_dir,
@@ -330,9 +330,9 @@ if __name__ == "__main__":
                 run_mode=run_mode, bgn_date=bgn_date, stp_date=stp_date
             )
         elif data_type == "POSC":
-            from project_setup import futures_position_c_db_name, db_structs
+            from project_setup import futures_position_c_db_name
 
-            mgr_download = CManagerDailyIncrementData("position.C.{}.csv.gz", futures_by_date_dir, calendar_path)
+            mgr_download = CManagerDailyIncrementData("position.C.{}.csv.gz", futures_by_date_dir, calendar)
             table = CTable(db_structs[futures_position_c_db_name]["CTable"])
             mgr_download.to_sqlite_database(
                 dst_db_save_dir=futures_dir,
@@ -340,9 +340,9 @@ if __name__ == "__main__":
                 run_mode=run_mode, bgn_date=bgn_date, stp_date=stp_date
             )
         elif data_type == "POSE":
-            from project_setup import futures_position_e_db_name, db_structs
+            from project_setup import futures_position_e_db_name
 
-            mgr_download = CManagerDailyIncrementData("position.E.{}.csv.gz", futures_by_date_dir, calendar_path)
+            mgr_download = CManagerDailyIncrementData("position.E.{}.csv.gz", futures_by_date_dir, calendar)
             table = CTable(db_structs[futures_position_e_db_name]["CTable"])
             mgr_download.to_sqlite_database(
                 dst_db_save_dir=futures_dir,
@@ -350,9 +350,9 @@ if __name__ == "__main__":
                 run_mode=run_mode, bgn_date=bgn_date, stp_date=stp_date
             )
         elif data_type == "STOCK":
-            from project_setup import futures_fundamental_db_name, db_structs
+            from project_setup import futures_fundamental_db_name
 
-            mgr_download = CManagerDailyIncrementData("stock.{}.csv.gz", futures_by_date_dir, calendar_path)
+            mgr_download = CManagerDailyIncrementData("stock.{}.csv.gz", futures_by_date_dir, calendar)
             table = CTable(db_structs[futures_fundamental_db_name]["CTableStock"])
             mgr_download.to_sqlite_database(
                 dst_db_save_dir=futures_dir,
@@ -360,9 +360,9 @@ if __name__ == "__main__":
                 run_mode=run_mode, bgn_date=bgn_date, stp_date=stp_date
             )
         elif data_type == "BASIS":
-            from project_setup import futures_fundamental_db_name, db_structs
+            from project_setup import futures_fundamental_db_name
 
-            mgr_download = CManagerDailyIncrementData("basis.{}.csv.gz", futures_by_date_dir, calendar_path)
+            mgr_download = CManagerDailyIncrementData("basis.{}.csv.gz", futures_by_date_dir, calendar)
             table = CTable(db_structs[futures_fundamental_db_name]["CTableBasis"])
             mgr_download.to_sqlite_database(
                 dst_db_save_dir=futures_dir,
