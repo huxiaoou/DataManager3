@@ -353,7 +353,6 @@ if __name__ == "__main__":
             )
         elif data_type == "STOCK":
             from project_setup import futures_fundamental_db_name
-            from TranslatorFundamental import translate_fundamental_from_csv_to_tsdb
             import platform
 
             # to sqlite
@@ -369,6 +368,7 @@ if __name__ == "__main__":
             this_platform = platform.system().upper()
             if this_platform == "LINUX":
                 from project_setup import global_config
+                from TranslatorFundamental import translate_fundamental_from_csv_to_tsdb
 
                 iter_dates = calendar.get_iter_list(bgn_date, stp_date, True)
                 end_date = iter_dates[-1]
@@ -381,11 +381,10 @@ if __name__ == "__main__":
                     tsdb_bgn_date=global_config["TSDB"]["bgn_date"],  # "20120101"
                 )
             else:
-                print(f"... {SetFontYellow('Error')}! When translating stock data from csv to tsdb")
+                print(f"... {SetFontYellow('Warning')}! When translating STOCK data from CSV to TSDB")
                 print(f"... This plat form is = {this_platform}, but it is expected to be LINUX")
         elif data_type == "BASIS":
             from project_setup import futures_fundamental_db_name
-            from TranslatorFundamental import translate_fundamental_from_csv_to_tsdb
             import platform
 
             # to sqlite
@@ -401,6 +400,7 @@ if __name__ == "__main__":
             this_platform = platform.system().upper()
             if this_platform == "LINUX":
                 from project_setup import global_config
+                from TranslatorFundamental import translate_fundamental_from_csv_to_tsdb
 
                 iter_dates = calendar.get_iter_list(bgn_date, stp_date, True)
                 end_date = iter_dates[-1]
@@ -413,5 +413,5 @@ if __name__ == "__main__":
                     tsdb_bgn_date=global_config["TSDB"]["bgn_date"],  # "20120101"
                 )
             else:
-                print(f"... {SetFontYellow('Error')}! When translating basis data from csv to tsdb")
+                print(f"... {SetFontYellow('Warning')}! When translating BASIS data from CSV to TSDB")
                 print(f"... This plat form is = {this_platform}, but it is expected to be LINUX")
