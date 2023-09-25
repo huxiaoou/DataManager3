@@ -3,23 +3,15 @@ $user_choice = Read-Host -Prompt "Please choose which part to run 'download/sync
 $stp_date = Read-Host -Prompt "Please input the STOP date, format = [YYYYMMDD]"
 if ($user_choice -eq "d")
 {
-    # --- calendar
     $today = Get-Date
     $bgn_date_calendar = "20080101"
     $stp_date_calendar = Get-Date -Date $today.AddDays(90) -Format "yyyyMMdd"
+
     python main.py -w d -t cal    -m o -b $bgn_date_calendar -s $stp_date_calendar
-
-    # --- md_wds
     python main.py -w d -t md_wds -m o -b $bgn_date_md       -s $stp_date
-
-    # --- posc and pose
     python main.py -w d -t posc   -m o -b $bgn_date_md       -s $stp_date
     python main.py -w d -t pose   -m o -b $bgn_date_md       -s $stp_date
-
-    # --- stock
     python main.py -w d -t stock  -m o -b $bgn_date_md       -s $stp_date
-
-    # --- basis
     $ans = Read-Host -Prompt "
 --- ! CAUTION ! ---
 Are you sure you want to overwrite all BASIS data?
@@ -32,25 +24,23 @@ Input 'y' to continue, else to abandon"
         python main.py -w d -t basis  -m o -b $bgn_date_md       -s $stp_date
     }
 }
-elseif ($user_choice -eq "s")
+elseif ($user_choice -eq "s") # sync
 {
-    # sync
-    python main.py -w s -b $bgn_date_md -s $stp_date -vs md, basis # cm01,em01
+    python main.py -w s -b $bgn_date_md -s $stp_date -vs md, basis
+#    python main.py -w s -b $bgn_date_md -s $stp_date -vs cm01,em01
 }
-elseif ($user_choice -eq "c")
+elseif ($user_choice -eq "c") # check
 {
-    # check
-    python main.py -w c -m o -b $bgn_date_md -s $stp_date -vs open, high, low, close, settle, presettle, volume, amount, oi # not to print details if no error
+    python main.py -w c -m o -b $bgn_date_md -s $stp_date -vs open,high,low,close,settle,presettle,volume,amount,oi # not to print details if no error
 }
-elseif ($user_choice -eq "t")
+elseif ($user_choice -eq "t") # translate
 {
-    # translate
     python main.py -w t -t md_wds  -m o -b $bgn_date_md -s $stp_date
     python main.py -w t -t md_tsdb -m o -b $bgn_date_md -s $stp_date
-    #    python main.py -w t -t cm01    -m o -b $bgn_date_md -s $stp_date
-    #    python main.py -w t -t em01    -m o -b $bgn_date_md -s $stp_date
     python main.py -w t -t posc    -m o -b $bgn_date_md -s $stp_date
     python main.py -w t -t pose    -m o -b $bgn_date_md -s $stp_date
     python main.py -w t -t stock   -m o -b $bgn_date_md -s $stp_date
     python main.py -w t -t basis   -m o -b $bgn_date_md -s $stp_date
+    #    python main.py -w t -t cm01    -m o -b $bgn_date_md -s $stp_date
+    #    python main.py -w t -t em01    -m o -b $bgn_date_md -s $stp_date
 }
