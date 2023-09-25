@@ -1,6 +1,5 @@
 import argparse
 import datetime as dt
-import pandas as pd
 
 
 def parse_args():
@@ -34,6 +33,9 @@ def parse_args():
 
 
 if __name__ == "__main__":
+    import pandas as pd
+    from skyrim.whiterun import SetFontYellow
+
     switch, data_type, t3, t2, check_values = parse_args()
     run_mode, bgn_date, stp_date = t3
     if switch == "D":
@@ -351,6 +353,8 @@ if __name__ == "__main__":
             )
         elif data_type == "STOCK":
             from project_setup import futures_fundamental_db_name
+            from TranslatorFundamental import translate_fundamental_from_csv_to_tsdb
+            import platform
 
             mgr_download = CManagerDailyIncrementData("stock.{}.csv.gz", futures_by_date_dir, calendar)
             table = CTable(db_structs[futures_fundamental_db_name]["CTableStock"])
@@ -359,8 +363,27 @@ if __name__ == "__main__":
                 dst_db_struct=CLib1Tab1(futures_fundamental_db_name, table),
                 run_mode=run_mode, bgn_date=bgn_date, stp_date=stp_date
             )
+
+            this_platform = platform.system().upper()
+            if this_platform == "LINUX":
+                from project_setup import global_config
+                iter_dates = calendar.get_iter_list(bgn_date, stp_date, True)
+                end_date = iter_dates[-1]
+                translate_fundamental_from_csv_to_tsdb(
+                    factor_lbl="stock",
+                    src_csv_db_path=futures_by_date_dir, tsdb_table_name=global_config["TSDB"]["tables"]["fund"],  # "huxo.fundamental",
+                    run_mode=run_mode, bgn_date=bgn_date, end_date=end_date, stp_date=stp_date,
+                    # custom_ts_db_path="/home/huxo/Deploy/Data/TSDB/", futures_md_ts_db_path="/var/TSDB/futures",
+                    custom_ts_db_path=global_config["TSDB"]["path"]["private"], futures_md_ts_db_path=global_config["TSDB"]["path"]["public"],
+                    tsdb_bgn_date=global_config["TSDB"]["bgn_date"],  # "20120101"
+                )
+            else:
+                print(f"... {SetFontYellow('Error')}! When translating stock data from csv to tsdb")
+                print(f"... This plat form is = {this_platform}, but it is expected to be LINUX")
         elif data_type == "BASIS":
             from project_setup import futures_fundamental_db_name
+            from TranslatorFundamental import translate_fundamental_from_csv_to_tsdb
+            import platform
 
             mgr_download = CManagerDailyIncrementData("basis.{}.csv.gz", futures_by_date_dir, calendar)
             table = CTable(db_structs[futures_fundamental_db_name]["CTableBasis"])
@@ -369,3 +392,21 @@ if __name__ == "__main__":
                 dst_db_struct=CLib1Tab1(futures_fundamental_db_name, table),
                 run_mode=run_mode, bgn_date=bgn_date, stp_date=stp_date
             )
+
+            this_platform = platform.system().upper()
+            if this_platform == "LINUX":
+                from project_setup import global_config
+
+                iter_dates = calendar.get_iter_list(bgn_date, stp_date, True)
+                end_date = iter_dates[-1]
+                translate_fundamental_from_csv_to_tsdb(
+                    factor_lbl="stock",
+                    src_csv_db_path=futures_by_date_dir, tsdb_table_name=global_config["TSDB"]["tables"]["fund"],  # "huxo.fundamental",
+                    run_mode=run_mode, bgn_date=bgn_date, end_date=end_date, stp_date=stp_date,
+                    # custom_ts_db_path="/home/huxo/Deploy/Data/TSDB/", futures_md_ts_db_path="/var/TSDB/futures",
+                    custom_ts_db_path=global_config["TSDB"]["path"]["private"], futures_md_ts_db_path=global_config["TSDB"]["path"]["public"],
+                    tsdb_bgn_date=global_config["TSDB"]["bgn_date"],  # "20120101"
+                )
+            else:
+                print(f"... {SetFontYellow('Error')}! When translating basis data from csv to tsdb")
+                print(f"... This plat form is = {this_platform}, but it is expected to be LINUX")
