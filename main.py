@@ -105,7 +105,7 @@ if __name__ == "__main__":
                 "preclose", "presettle",
                 "vol", "amount", "oi"
             ]
-            download_engine_tsdb = CTSDBReader(t_tsdb_path=global_config["TSDB"]["server_path"])
+            download_engine_tsdb = CTSDBReader(t_tsdb_path=global_config["TSDB"]["path"]["public"])
             mgr_download = CManagerDailyIncrementDataMdTSDB(
                 download_values=download_values, instru_info_table=instru_info_table_i,
                 download_engine_tsdb=download_engine_tsdb,
@@ -123,7 +123,7 @@ if __name__ == "__main__":
                 "daily_open", "daily_high", "daily_low",
                 "preclose", "preoi",
             ]
-            download_engine_tsdb = CTSDBReader(t_tsdb_path=global_config["TSDB"]["server_path"])
+            download_engine_tsdb = CTSDBReader(t_tsdb_path=global_config["TSDB"]["path"]["public"])
             mgr_download = CManagerDailyIncrementDataCM01TSDB(
                 download_values=download_values, instru_info_table=instru_info_table_i,
                 download_engine_tsdb=download_engine_tsdb,
@@ -140,7 +140,7 @@ if __name__ == "__main__":
                 "daily_open", "daily_high", "daily_low",
                 "preclose", "preoi",
             ]
-            download_engine_tsdb = CTSDBReader(t_tsdb_path=global_config["TSDB"]["server_path"])
+            download_engine_tsdb = CTSDBReader(t_tsdb_path=global_config["TSDB"]["path"]["public"])
             mgr_download = CManagerDailyIncrementDataEM01TSDB(
                 download_values=download_values, instru_info_table=instru_info_table_i,
                 download_engine_tsdb=download_engine_tsdb,
