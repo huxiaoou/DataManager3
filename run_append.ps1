@@ -1,7 +1,7 @@
-$user_choice = Read-Host -Prompt "Please choose which part to run 'download' or 'translate', [d/t]"
+$user_choice = Read-Host -Prompt "Please choose which part to run 'download/translate', [d/t]"
 $append_date = Read-Host -Prompt "Please input the APPEND date, format = [YYYYMMDD]"
 
-if ($user_choice -eq 'd')
+if ($user_choice -eq "d")
 {
     Write-Host "... user choose to run DOWNLOAD"
 
@@ -23,7 +23,7 @@ if ($user_choice -eq 'd')
     python main.py -w s -b $append_date -vs md,basis # cm01,em01
     python main.py -w c -m a -b $append_date -vs open,high,low,close,settle,presettle,volume,amount,oi
 }
-elseif ($user_choice -eq 't')
+elseif ($user_choice -eq "t")
 {
     Write-Host "... user choose to run TRANSLATE"
 

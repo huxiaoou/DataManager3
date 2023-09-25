@@ -1,12 +1,10 @@
 $bgn_date_md = "20120101"
-$today = Get-Date
-
-
 $user_choice = Read-Host -Prompt "Please choose which part to run 'download/sync/check/translate', [d/s/c/t]"
 $stp_date = Read-Host -Prompt "Please input the STOP date, format = [YYYYMMDD]"
 if ($user_choice -eq "d")
 {
     # --- calendar
+    $today = Get-Date
     $bgn_date_calendar = "20080101"
     $stp_date_calendar = Get-Date -Date $today.AddDays(90) -Format "yyyyMMdd"
     python main.py -w d -t cal    -m o -b $bgn_date_calendar -s $stp_date_calendar
@@ -37,12 +35,12 @@ Input 'y' to continue, else to abandon"
 elseif ($user_choice -eq "s")
 {
     # sync
-    python main.py -w s -b $bgn_date_md -s $stp_date -vs md,basis # cm01,em01
+    python main.py -w s -b $bgn_date_md -s $stp_date -vs md, basis # cm01,em01
 }
 elseif ($user_choice -eq "c")
 {
     # check
-    python main.py -w c -m o -b $bgn_date_md -s $stp_date -vs open,high,low,close,settle,presettle,volume,amount,oi # not to print details if no error
+    python main.py -w c -m o -b $bgn_date_md -s $stp_date -vs open, high, low, close, settle, presettle, volume, amount, oi # not to print details if no error
 }
 elseif ($user_choice -eq "t")
 {
