@@ -37,12 +37,12 @@ Input 'y' to continue, else to abandon"
 elseif ($user_choice -eq "s")
 {
     # sync
-    python main.py -w s -b $bgn_date_md -s $stp_date -vs md, basis # cm01,em01
+    python main.py -w s -b $bgn_date_md -s $stp_date -vs md,basis # cm01,em01
 }
 elseif ($user_choice -eq "c")
 {
     # check
-    python main.py -w c -m o -b $bgn_date_md -s $stp_date -vs open, high, low, close, settle, presettle, volume, amount, oi # not to print details if no error
+    python main.py -w c -m o -b $bgn_date_md -s $stp_date -vs open,high,low,close,settle,presettle,volume,amount,oi # not to print details if no error
 }
 elseif ($user_choice -eq "t")
 {
