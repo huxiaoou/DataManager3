@@ -26,7 +26,7 @@ Input 'y' to continue, else to abandon"
 }
 elseif ($user_choice -eq "s") # sync
 {
-    python main.py -w s -b $bgn_date_md -s $stp_date -vs md, basis
+    python main.py -w s -b $bgn_date_md -s $stp_date -vs md,basis
 #    python main.py -w s -b $bgn_date_md -s $stp_date -vs cm01,em01
 }
 elseif ($user_choice -eq "c") # check
