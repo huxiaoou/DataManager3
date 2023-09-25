@@ -8,8 +8,8 @@ def parse_args():
                              help="""use this to decide which parts to run, available options = {
         'd': download,
         's': sync between local and server
-        't': translate to sqlite/tsdb
         'c': check values
+        't': translate to sqlite/tsdb
         }""")
     args_parser.add_argument("-t", "--type", type=str, default="",
                              help="""available options = {'cal', 'md_wds', 'md_tsdb', 'em01', 'cm01', 'posc', 'pose', 'stock', 'basis'}""")
@@ -356,6 +356,7 @@ if __name__ == "__main__":
             from TranslatorFundamental import translate_fundamental_from_csv_to_tsdb
             import platform
 
+            # to sqlite
             mgr_download = CManagerDailyIncrementData("stock.{}.csv.gz", futures_by_date_dir, calendar)
             table = CTable(db_structs[futures_fundamental_db_name]["CTableStock"])
             mgr_download.to_sqlite_database(
@@ -364,9 +365,11 @@ if __name__ == "__main__":
                 run_mode=run_mode, bgn_date=bgn_date, stp_date=stp_date
             )
 
+            # to tsdb
             this_platform = platform.system().upper()
             if this_platform == "LINUX":
                 from project_setup import global_config
+
                 iter_dates = calendar.get_iter_list(bgn_date, stp_date, True)
                 end_date = iter_dates[-1]
                 translate_fundamental_from_csv_to_tsdb(
@@ -385,6 +388,7 @@ if __name__ == "__main__":
             from TranslatorFundamental import translate_fundamental_from_csv_to_tsdb
             import platform
 
+            # to sqlite
             mgr_download = CManagerDailyIncrementData("basis.{}.csv.gz", futures_by_date_dir, calendar)
             table = CTable(db_structs[futures_fundamental_db_name]["CTableBasis"])
             mgr_download.to_sqlite_database(
@@ -393,6 +397,7 @@ if __name__ == "__main__":
                 run_mode=run_mode, bgn_date=bgn_date, stp_date=stp_date
             )
 
+            # to tsdb
             this_platform = platform.system().upper()
             if this_platform == "LINUX":
                 from project_setup import global_config
@@ -400,7 +405,7 @@ if __name__ == "__main__":
                 iter_dates = calendar.get_iter_list(bgn_date, stp_date, True)
                 end_date = iter_dates[-1]
                 translate_fundamental_from_csv_to_tsdb(
-                    factor_lbl="stock",
+                    factor_lbl="basis",
                     src_csv_db_path=futures_by_date_dir, tsdb_table_name=global_config["TSDB"]["tables"]["fund"],  # "huxo.fundamental",
                     run_mode=run_mode, bgn_date=bgn_date, end_date=end_date, stp_date=stp_date,
                     # custom_ts_db_path="/home/huxo/Deploy/Data/TSDB/", futures_md_ts_db_path="/var/TSDB/futures",
