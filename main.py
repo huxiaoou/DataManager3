@@ -12,7 +12,7 @@ def parse_args():
         't': translate to sqlite/tsdb
         }""")
     args_parser.add_argument("-t", "--type", type=str, default="",
-                             help="""available options = {'cal', 'md_wds', 'md_tsdb', 'em01', 'cm01', 'posc', 'pose', 'stock', 'basis'}""")
+                             help="""available options = {'cal', 'md_wds', 'md_tsdb', 'em01', 'cm01', 'posc', 'pose', 'stock', 'basis', 'rf', 'rd', 'nf', 'nd'}""")
     args_parser.add_argument("-m", "--mode", type=str, choices=("o", "a"), help="""run mode, available options = {'o', 'a'}""")
     args_parser.add_argument("-b", "--bgn", type=str, help="""begin date""")
     args_parser.add_argument("-s", "--stp", type=str, help="""stop  date""")
@@ -415,3 +415,26 @@ if __name__ == "__main__":
             else:
                 print(f"... {SetFontYellow('Warning')}! When translating BASIS data from CSV to TSDB")
                 print(f"... This plat form is = {this_platform}, but it is expected to be LINUX")
+        elif data_type in ["RF", "RD", "NF", "ND"]:
+            from project_setup import tsdb_private_path, tsdb_public_path
+            from project_setup import signals_portfolios_dir, futures_instru_info_path, futures_by_instrument_dir
+            from TranslatorFactor import translate_signal_from_sql_to_tsdb
+            from skyrim.whiterun import CInstrumentInfoTable
+
+            instru_info_tab = CInstrumentInfoTable(futures_instru_info_path, "windCode", "CSV")
+            concerned_universe = instru_info_tab.get_universe()
+            end_date = (dt.datetime.strptime(stp_date, "%Y%m%d") - dt.timedelta(days=1)).strftime("%Y%m%d")
+
+            # factor relative settings
+            tsdb_bgn_date = "20120101"
+            factor_value_columns = ["instrument", "value"]
+            tsdb_table_name = "huxo.portfolio"
+            values_rename_mapper = {"value": data_type}
+
+            translate_signal_from_sql_to_tsdb(
+                factor_lbl=data_type, factor_sql_db_dir=signals_portfolios_dir, tsdb_table_name=tsdb_table_name,
+                run_mode=run_mode, bgn_date=bgn_date, end_date=end_date, stp_date=stp_date,
+                concerned_universe=concerned_universe, by_instru_dir=futures_by_instrument_dir,
+                tsdb_private_path=tsdb_private_path, tsdb_public_path=tsdb_public_path,
+                factor_value_columns=factor_value_columns, tsdb_bgn_date=tsdb_bgn_date
+            )

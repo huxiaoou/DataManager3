@@ -46,6 +46,16 @@ futures_positions_c_db_name = global_config["futures"]["positions"]["c_db"]
 futures_positions_e_db_name = global_config["futures"]["positions"]["e_db"]
 futures_fundamental_db_name = global_config["futures"]["fundamental"]["db"]
 
+# --- signals dir
+for_projects_dir = os.path.join(project_data_root_dir, global_config["forProjects"]["dir"])
+deploy_cta_data_dir = os.path.join(for_projects_dir, global_config["forProjects"]["cta"]["dir"])
+signals_dir = os.path.join(deploy_cta_data_dir, "signals")
+signals_portfolios_dir = os.path.join(signals_dir, "portfolios")
+
+# --- tsdb
+tsdb_private_path = global_config["TSDB"]["path"]["private"]
+tsdb_public_path = global_config["TSDB"]["path"]["public"]
+
 if __name__ == "__main__":
     from skyrim.winterhold import check_and_mkdir
 
