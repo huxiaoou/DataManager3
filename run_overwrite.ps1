@@ -43,4 +43,11 @@ elseif ($user_choice -eq "t") # translate
     python main.py -w t -t basis   -m o -b $bgn_date_md -s $stp_date
     #    python main.py -w t -t cm01    -m o -b $bgn_date_md -s $stp_date
     #    python main.py -w t -t em01    -m o -b $bgn_date_md -s $stp_date
+
+    # Not available on Windows
+    # codes are just recorded here to backup
+    # python main.py -w t -t rf -m o -b 20140701 -s 20231017
+    # python main.py -w t -t rd -m o -b 20140701 -s 20231017
+    # python main.py -w t -t nf -m o -b 20140701 -s 20231017
+    # python main.py -w t -t nd -m o -b 20140701 -s 20231017
 }

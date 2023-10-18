@@ -30,5 +30,12 @@ elseif ($user_choice -eq "t")
     python main.py -w t -t basis   -m a -b $append_date
     #python main.py -w t -t cm01    -m a -b $append_date
     #python main.py -w t -t em01    -m a -b $append_date
+
+    # Not available on Windows
+    # codes are just recorded here to backup
+    # python main.py -w t -t rf -m a -b 20231017
+    # python main.py -w t -t rd -m a -b 20231017
+    # python main.py -w t -t nf -m a -b 20231017
+    # python main.py -w t -t nd -m a -b 20231017
 }
 
