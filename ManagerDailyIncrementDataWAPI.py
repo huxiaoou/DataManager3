@@ -19,12 +19,12 @@ class CManagerDailyIncrementDataWithEngineWAPI(CManagerDailyIncrementData):
 
 # --- Basis from WAPI
 class CManagerDailyIncrementDataBasisWAPI(CManagerDailyIncrementDataWithEngineWAPI):
-    def __init__(self, download_values: list[str], rename_mapper: dict[str, str],
-                 file_name_format: str = "basis.{}.csv.gz",
-                 using_full_id: bool = True, **kwargs):
+    def __init__(self, download_values: list[str], rename_mapper: dict[str, str], exchange_filter: list[str],
+                 file_name_format: str, using_full_id: bool = True, **kwargs):
         self.download_values = download_values
         self.rename_mapper = rename_mapper
         self.using_full_id = using_full_id
+        self.exchange_filter = exchange_filter  # commodity = ["SHF", "INE", "DCE", "CZC", "GFE"], financial = ["CFE"]
         super().__init__(file_name_format=file_name_format, **kwargs)
 
     def _get_update_data(self, trade_date: str) -> pd.DataFrame:
@@ -33,7 +33,7 @@ class CManagerDailyIncrementDataBasisWAPI(CManagerDailyIncrementDataWithEngineWA
 
     def _reformat(self, raw_df: pd.DataFrame, trade_date: str) -> pd.DataFrame:
         raw_df = self.download_engine_wapi.parse_wind_code(raw_df)
-        filter_exchange = raw_df["exchange"].map(lambda z: z in ["SHF", "INE", "DCE", "CZC", "GFE"])  # exclude instruments of CFE
+        filter_exchange = raw_df["exchange"].map(lambda z: z in self.exchange_filter)  # exclude instruments of CFE
         raw_df = raw_df.loc[filter_exchange].copy()
         raw_df.rename(mapper=self.rename_mapper, axis=1, inplace=True)
         return raw_df

@@ -230,6 +230,7 @@ if __name__ == "__main__":
             from DownloadEngineWAPI import CDownloadEngineWAPI
             from ManagerDailyIncrementDataWAPI import CManagerDailyIncrementDataBasisWAPI
 
+            # for commodity
             download_engine_wapi = CDownloadEngineWAPI(instruments=universe)
             download_values = ["anal_basis", "anal_basispercent2"]
             rename_mapper = {
@@ -238,6 +239,23 @@ if __name__ == "__main__":
             }
             mgr_download = CManagerDailyIncrementDataBasisWAPI(
                 download_values=download_values, rename_mapper=rename_mapper,
+                exchange_filter=["SHF", "INE", "DCE", "CZC", "GFE"], file_name_format="basis.{}.csv.gz",
+                download_engine_wapi=download_engine_wapi,
+                data_save_dir=futures_by_date_dir, calendar=calendar
+            )
+            mgr_download.main(run_mode, bgn_date, stp_date, verbose=run_mode in ["A"])
+
+            # for financial
+            download_engine_wapi = CDownloadEngineWAPI(instruments=["IC.CFE", "IF.CFE", "IH.CFE", "IM.CFE"])
+            download_values = ["if_basis", "anal_basispercent", "anal_basisannualyield"]
+            rename_mapper = {
+                "if_basis": "basis",
+                "anal_basispercent": "basis_rate",
+                "anal_basisannualyield": "basis_rate_annual",
+            }
+            mgr_download = CManagerDailyIncrementDataBasisWAPI(
+                download_values=download_values, rename_mapper=rename_mapper,
+                exchange_filter=["CFE"], file_name_format="basis_cfe.{}.csv.gz",
                 download_engine_wapi=download_engine_wapi,
                 data_save_dir=futures_by_date_dir, calendar=calendar
             )
@@ -259,6 +277,7 @@ if __name__ == "__main__":
                 },
                 "upload": {
                     "basis": "basis.{}.csv.gz",
+                    "basis_cfe": "basis_cfe.{}.csv.gz",
                 }
             }
             calendar = CCalendar(calendar_path)

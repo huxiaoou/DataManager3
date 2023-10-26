@@ -13,7 +13,7 @@ if ($user_choice -eq "d")
     python main.py -w d -t basis  -m a -b $append_date
 
     # --- sync and check
-    python main.py -w s -b $append_date -vs md,basis
+    python main.py -w s -b $append_date -vs md,basis,basis_cfe
 #    python main.py -w s -b $append_date -vs cm01,em01
     python main.py -w c -m a -b $append_date -vs open,high,low,close,settle,presettle,volume,amount,oi
 }
