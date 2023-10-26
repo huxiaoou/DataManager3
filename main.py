@@ -415,6 +415,14 @@ if __name__ == "__main__":
                 run_mode=run_mode, bgn_date=bgn_date, stp_date=stp_date
             )
 
+            mgr_download = CManagerDailyIncrementData("basis_cfe.{}.csv.gz", futures_by_date_dir, calendar)
+            table = CTable(db_structs[futures_fundamental_db_name]["CTableBasisCFE"])
+            mgr_download.to_sqlite_database(
+                dst_db_save_dir=futures_dir,
+                dst_db_struct=CLib1Tab1(futures_fundamental_db_name, table),
+                run_mode=run_mode, bgn_date=bgn_date, stp_date=stp_date
+            )
+
             # to tsdb
             this_platform = platform.system().upper()
             if this_platform == "LINUX":
