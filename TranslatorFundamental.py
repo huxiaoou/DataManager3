@@ -11,8 +11,17 @@ def translate_fundamental_from_csv_to_tsdb(
 ):
     src_data_columns_config = {
         "BASIS": ["instrument", "basis", "basis_rate"],
+        "BASIS_CFE": ["instrument", "basis", "basis_rate", "basis_rate_annual"],
         "STOCK": ["instrument", "in_stock_total", "in_stock", "available_in_stock"],
     }
+    values_rename_mapper = {
+        "BASIS": {},
+        "BASIS_CFE": {
+            "basis": "basis_cfe",
+            "basis_rate": "basis_rate_cfe",
+            "basis_rate_annual": "basis_rate_annual_cfe", },
+        "STOCK": {},
+    }[factor_lbl.upper()]
 
     # set factor
     csv_file_format = f"{factor_lbl}.{{}}.csv.gz"  # => "basis.{}.csv.gz"
@@ -30,11 +39,10 @@ def translate_fundamental_from_csv_to_tsdb(
 
     # --- load futures market data tsdb
     futures_md_tsdb_reader = CTSDBReader(futures_md_ts_db_path)
-
     translate_csv_to_tsdb(
         csv_files_root_dir=src_csv_db_path, csv_file_format=csv_file_format,
         values_to_be_translate=values_to_be_translated,
-        values_rename_mapper={},
+        values_rename_mapper=values_rename_mapper,
         mode=run_mode,
         bgn_date=bgn_date, end_date=end_date,
         tsdb_dst_path=custom_ts_db_path,

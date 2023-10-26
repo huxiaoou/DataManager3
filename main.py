@@ -435,10 +435,18 @@ if __name__ == "__main__":
                     factor_lbl="basis",
                     src_csv_db_path=futures_by_date_dir, tsdb_table_name=global_config["TSDB"]["tables"]["fund"],  # "huxo.fundamental",
                     run_mode=run_mode, bgn_date=bgn_date, end_date=end_date, stp_date=stp_date,
-                    # custom_ts_db_path="/home/huxo/Deploy/Data/TSDB/", futures_md_ts_db_path="/var/TSDB/futures",
                     custom_ts_db_path=global_config["TSDB"]["path"]["private"], futures_md_ts_db_path=global_config["TSDB"]["path"]["public"],
                     tsdb_bgn_date=global_config["TSDB"]["bgn_date"],  # "20120101"
                 )
+
+                translate_fundamental_from_csv_to_tsdb(
+                    factor_lbl="basis_cfe",
+                    src_csv_db_path=futures_by_date_dir, tsdb_table_name=global_config["TSDB"]["tables"]["fund"],  # "huxo.fundamental",
+                    run_mode=run_mode, bgn_date=bgn_date, end_date=end_date, stp_date=stp_date,
+                    custom_ts_db_path=global_config["TSDB"]["path"]["private"], futures_md_ts_db_path=global_config["TSDB"]["path"]["public"],
+                    tsdb_bgn_date=global_config["TSDB"]["bgn_date"],  # "20120101"
+                )
+
             else:
                 print(f"... {SetFontYellow('Warning')}! When translating BASIS data from CSV to TSDB")
                 print(f"... This plat form is = {this_platform}, but it is expected to be LINUX")
