@@ -1,6 +1,7 @@
 import os
 import datetime as dt
 import pandas as pd
+from rich.progress import track
 from skyrim.whiterun import CCalendar, SetFontGreen, SetFontYellow
 from skyrim.winterhold2 import check_and_mkdir
 from skyrim.falkreath import CManagerLibWriterByDate, CLib1Tab1
@@ -97,7 +98,7 @@ class CManagerDailyIncrementData(object):
         dst_db_writer = CManagerLibWriterByDate(dst_db_save_dir, dst_db_struct.m_lib_name)
         dst_db_writer.initialize_table(dst_db_struct.m_tab, run_mode in ["O"])
         if self.__check_db_continuity(dst_db_writer, run_mode, bgn_date) == 0:
-            for trade_date in self.calendar.get_iter_list(bgn_date, stp_date, True):
+            for trade_date in track(self.calendar.get_iter_list(bgn_date, stp_date, True)):
                 df = pd.read_csv(self.__get_date_file_path(trade_date))
                 dst_db_writer.update_by_date(trade_date, df, t_using_index=False)
         dst_db_writer.close()
